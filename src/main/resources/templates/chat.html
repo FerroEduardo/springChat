@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="utf-8">
+    <title>Chat - springChat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <!-- BOOTSTRAP 4 -->
+    <div th:replace="fragments/bootstrap"></div>
+    <!-- ROBOTO -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link href="/css/chat.css" rel="stylesheet">
+    <!-- JS -->
+    <div th:replace="fragments/socket"></div>
+</head>
+<body>
+<noscript>
+    <h2 style="color: #ff0000">
+        Seu navegador está com o JavaScript desativado, ative-o.
+        Caso contrário, não terá acesso ao site.
+    </h2>
+</noscript>
+<div class="container-fluid everything">
+    <div class="row">
+        <div class="col-md-3 col-sm-12" id="left-side-parent">
+            <div class="left-side">
+                <div class="top-side">
+                    <div class="search-add-channel input-group">
+                        <input type="text" class="form-control" id="searchChannel" placeholder="Pesquisar Canal" aria-label="Pesquisar Canal" aria-describedby="addChatBtnOpenModal" onkeyup="searchChannel()">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="button" id="addChatBtnOpenModal" data-toggle="modal" data-target="#addChatPopup">
+                                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-plus-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                    <path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="middle-side">
+                    <div id="chat-list" >
+                        <div class="channel chat-item">
+                            <div class="channel-image">
+
+                            </div>
+                            <div class="channel-info">
+                                <h5 class="channel-name chat-title">
+                                    Nome do Canal
+                                </h5>
+
+                                <p class="channel-description">
+                                    Descrição do Canal
+                                </p>
+                            </div>
+                        </div>
+                        <div class="channel chat-item">
+                            <div class="channel-image">
+
+                            </div>
+                            <div class="channel-info">
+                                <h5 class="channel-name chat-title">
+                                    Nome de Outro Canal
+                                </h5>
+
+                                <p class="channel-description">
+                                    Descrição de Outro Canal
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bottom-side">
+<!--                    <img alt="" class="user-image" src="square.png">-->
+                    <div style="display: flex; align-items: stretch;">
+                        <div class="user-image" id="user-image-color" style="color: inherit">
+                            <svg width="" height="" viewBox="0 0 16 16" class="bi bi-person-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13.468 12.37C12.758 11.226 11.195 10 8 10s-4.757 1.225-5.468 2.37A6.987 6.987 0 0 0 8 15a6.987 6.987 0 0 0 5.468-2.63z"/>
+                                <path fill-rule="evenodd" d="M8 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                <path fill-rule="evenodd" d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h5 id="username">Nome de Usuário</h5>
+                        </div>
+                    </div>
+                    <button class="btn config" id="config-btn" data-toggle="modal" data-target="#modalConfig">
+                        <svg width="" height="" viewBox="0 0 16 16" class="bi bi-gear-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 0 0-5.86 2.929 2.929 0 0 0 0 5.858z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9 col-sm-12" id="right-side-parent">
+            <div class="right-side">
+                <div class="actual-channel-info">
+                    <div class="side-bar-btn">
+                        <button class="btn btn-primary" type="button" onclick="toggleSideBar()">
+                            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-left-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.5.5a.5.5 0 0 0 0-1H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="actual-channel-img"></div>
+                    <div class="actual-channel-name-desc">
+                        <h5 class="channel-name" id="actual-channel-name">
+                            Desconectado
+<!--                            Nome do Canal-->
+                        </h5>
+                        <p class="channel-description" id="actual-channel-desc">
+<!--                            Descrição do Canal-->
+                        </p>
+                    </div>
+                    <!-- USUARIOS ONLINE -->
+                    <div class="">
+                        <div class="dropdown" style="display: inline; position: inherit;">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="userBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                                Usuários
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="userBtn" id="userList">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="messages">
+                    <div class="message">
+                        <!--                        <img alt="" class="user-image" src="square.png">-->
+                        <div class="user-image" style="background-color: #E94560"></div>
+                        <div>
+                            <h5 class="message-username">
+                                Assistente
+                            </h5>
+                            <p class="message-text">
+                                Olá! Esse é o chat, digite alguma coisa.
+                            </p>
+                            <p class="message-time" th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm:ss')}">
+                            </p>
+                        </div>
+                    </div>
+                    <div class="message">
+                        <!--                        <img alt="" class="user-image" src="square.png">-->
+                        <div class="user-image" style="background-color: #E94560"></div>
+                        <div>
+                            <h5 class="message-username">
+                                Assistente
+                            </h5>
+                            <p class="message-text">
+                                Selecione ao lado, um canal de sua escolha para iniciar o bate papo. Ou, se preferir, adicione um canal na lista selecionando o icone próximo da barra de pesquisa.
+                            </p>
+                            <p class="message-time" th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm:ss')}">
+                            </p>
+                        </div>
+                    </div>
+                    <div class="message">
+                        <!--                        <img alt="" class="user-image" src="square.png">-->
+                        <div class="user-image" style="background-color: #E94560"></div>
+                        <div>
+                            <h5 class="message-username">
+                                Assistente
+                            </h5>
+                            <p class="message-text">
+                                Espero que goste do nosso serviço.
+                            </p>
+                            <p class="message-time" th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm:ss')}">
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-send-messages">
+                    <div class="input-group">
+                        <textarea class="form-control" id="send-message-text" placeholder="Digite Alguma Coisa" aria-label="Digite Alguma Coisa" disabled></textarea>
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" id="emoji-btn" type="button" disabled>
+                                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-emoji-sunglasses" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                    <path fill-rule="evenodd" d="M4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM6.5 6.497V6.5h-1c0-.568.447-.947.862-1.154C6.807 5.123 7.387 5 8 5s1.193.123 1.638.346c.415.207.862.586.862 1.154h-1v-.003l-.003-.01a.213.213 0 0 0-.036-.053.86.86 0 0 0-.27-.194C8.91 6.1 8.49 6 8 6c-.491 0-.912.1-1.19.24a.86.86 0 0 0-.271.194.213.213 0 0 0-.036.054l-.003.01z"/>
+                                    <path d="M2.31 5.243A1 1 0 0 1 3.28 4H6a1 1 0 0 1 1 1v1a2 2 0 0 1-2 2h-.438a2 2 0 0 1-1.94-1.515L2.31 5.243zM9 5a1 1 0 0 1 1-1h2.72a1 1 0 0 1 .97 1.243l-.311 1.242A2 2 0 0 1 11.439 8H11a2 2 0 0 1-2-2V5z"/>
+                                </svg>
+                            </button>
+                            <button class="btn btn-primary" id="send-message-btn" type="button" disabled>
+                                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-return-left" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BOOTSTRAP MODALS -->
+<!-- Add Channel MODAL -->
+<div class="modal fade" id="addChatPopup" tabindex="-1" role="dialog" aria-labelledby="addChatPopupTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addChatPopupTitle">Adicionar Canal</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label for="addChatNome">Nome do Novo Canal:</label>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Nome do Novo Canal" id="addChatNome" maxlength="35">
+                </div>
+                <label for="addChatDesc">Descrição do Novo Canal:</label>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Descrição do Novo Canal" id="addChatDesc" maxlength="35">
+                </div>
+                <label for="addChatColor">Cor do Novo Canal:</label>
+                <div class="input-group mb-3">
+                    <input type="color" class="form-control" placeholder="Descrição do Novo Canal" id="addChatColor" value="#E94560">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="addChatBtn">Adicionar Canal</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CONFIG MODAL -->
+<div class="modal fade" id="modalConfig" tabindex="-1" role="dialog" aria-labelledby="modalConfigLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="">Configurações</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <a href="#" onclick="document.logoutForm.submit()" role="menuitem">
+                    <button type="button" class="btn btn-link btn-block">
+                        Logout
+                        <span>
+                            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-box-arrow-left" fill="currentColor"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                      d="M4.354 11.354a.5.5 0 0 0 0-.708L1.707 8l2.647-2.646a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708 0z"/>
+                                <path fill-rule="evenodd" d="M11.5 8a.5.5 0 0 0-.5-.5H2a.5.5 0 0 0 0 1h9a.5.5 0 0 0 .5-.5z"/>
+                                <path fill-rule="evenodd"
+                                      d="M14 13.5a1.5 1.5 0 0 0 1.5-1.5V4A1.5 1.5 0 0 0 14 2.5H7A1.5 1.5 0 0 0 5.5 4v1.5a.5.5 0 0 0 1 0V4a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5H7a.5.5 0 0 1-.5-.5v-1.5a.5.5 0 0 0-1 0V12A1.5 1.5 0 0 0 7 13.5h7z"/>
+                            </svg>
+                        </span>
+                        <form name="logoutForm" th:action="@{/logout}" method="post" th:hidden="true">
+                            <input hidden type="submit" value="Desconectar"/>
+                        </form>
+                    </button>
+                </a>
+                <a href="/trocarsenha/">
+                    <button type="button" class="btn btn-link btn-block">
+                            Alterar Senha
+                            <span>
+                                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-hash" fill="currentcolor"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"/>
+                                </svg>
+                            </span>
+                    </button>
+                </a>
+                <button type="button" class="btn btn-link btn-block" data-toggle="modal" data-target="#colorModal">
+                    Alterar Cor de Usuário
+                    <span>
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-brush" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M15.825.12a.5.5 0 0 1 .132.584c-1.53 3.43-4.743 8.17-7.095 10.64a6.067 6.067 0 0 1-2.373 1.534c-.018.227-.06.538-.16.868-.201.659-.667 1.479-1.708 1.74a8.117 8.117 0 0 1-3.078.132 3.658 3.658 0 0 1-.563-.135 1.382 1.382 0 0 1-.465-.247.714.714 0 0 1-.204-.288.622.622 0 0 1 .004-.443c.095-.245.316-.38.461-.452.393-.197.625-.453.867-.826.094-.144.184-.297.287-.472l.117-.198c.151-.255.326-.54.546-.848.528-.739 1.2-.925 1.746-.896.126.007.243.025.348.048.062-.172.142-.38.238-.608.261-.619.658-1.419 1.187-2.069 2.175-2.67 6.18-6.206 9.117-8.104a.5.5 0 0 1 .596.04zM4.705 11.912a1.23 1.23 0 0 0-.419-.1c-.247-.013-.574.05-.88.479a11.01 11.01 0 0 0-.5.777l-.104.177c-.107.181-.213.362-.32.528-.206.317-.438.61-.76.861a7.127 7.127 0 0 0 2.657-.12c.559-.139.843-.569.993-1.06a3.121 3.121 0 0 0 .126-.75l-.793-.792zm1.44.026c.12-.04.277-.1.458-.183a5.068 5.068 0 0 0 1.535-1.1c1.9-1.996 4.412-5.57 6.052-8.631-2.591 1.927-5.566 4.66-7.302 6.792-.442.543-.796 1.243-1.042 1.826a11.507 11.507 0 0 0-.276.721l.575.575zm-4.973 3.04l.007-.005a.031.031 0 0 1-.007.004zm3.582-3.043l.002.001h-.002z"/>
+                        </svg>
+                    </span>
+                </button>
+                <a href="/admin/" target="_blank" sec:authorize="hasRole('ROLE_ADMIN')">
+                    <!-- PAINEL ADMIN -->
+                    <button type="button" class="btn btn-link btn-block" >
+                            Painel Admin
+                            <span>
+                                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-gear-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 0 0-5.86 2.929 2.929 0 0 0 0 5.858z"/>
+                                </svg>
+                            </span>
+                    </button>
+                </a>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ColorPicker Modal -->
+<div class="modal fade" id="colorModal" tabindex="-1" aria-labelledby="colorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="colorModalLabel">Alterar Cor de Usuário</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label for="userColor">Cor</label>
+                <input type="color" id="userColor" name="userColor">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary" id="change-color-btn">Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toasts -->
+<div aria-live="polite" aria-atomic="true">
+    <div id="toast-list">
+    </div>
+</div>
+<script src="/js/chat.js"></script>
+<script type="module">
+    import { EmojiButton } from '/js/emojibutton.js';
+    const picker = new EmojiButton({
+        autoHide: false,
+        position: {
+            top: '0',
+            right: '0'
+        },
+        theme: 'dark',
+        zIndex: 10000,
+        rootElement: document.querySelector('.right-side'),
+        showVariants: false,
+        recentsCount: 5
+    });
+    picker.on('emoji', selection => {
+        $("#send-message-text").val($("#send-message-text").val() + selection.emoji);
+    });
+    const trigger = $("#emoji-btn");
+    trigger.click(function () {
+        picker.togglePicker();
+    });
+</script>
+<script type="text/javascript" th:inline="javascript">
+    const username = [[${#authentication.getPrincipal().getUsername()}]];
+    let corAtual;
+    let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    $("#username").text(username);
+    $(function () {
+        let canalAtual = '';
+        const csrfHeaderName = [[${_csrf.headerName}]];
+        const csrfToken = [[${_csrf.token}]];
+
+        $("#change-color-btn").click(function () {
+            corAtual = $("#userColor").val();
+            setUserColor(username, corAtual);
+            $("#user-image-color").css('color', corAtual)
+            $("#colorModal").modal('hide');
+        });
+
+        function configurarCanais() {
+            $(".chat-item").each(function () {
+                let elemento = $(this);
+                elemento.unbind('click');
+                elemento.click(function(e){
+                    //Previne de abrir chat ao clicar em algo que tenha a classe 'prevent'
+                    if(e.target.classList.contains('prevent')){
+                        e.stopPropagation();
+                        return;
+                    }
+                    const title = elemento.find('.chat-title').text().trim();
+                    canalAtual = title;
+                    const desc = elemento.find('.channel-description').text().trim();
+                    const color = elemento.find('.channel-image').css('background-color');
+                    let actualChannelName = $('#actual-channel-name');
+                    let actualChannelDesc = $('#actual-channel-desc');
+                    let actualChannelColor = $('#actual-channel-img');
+
+                    // If it is already connected, disconnect from the previous one
+                    if (actualChannelName.text().trim() !== 'Desconectado') {
+                        disconnect(actualChannelName.text().trim(), username);
+                    }
+
+                    $("#send-message-text").prop('disabled', false); // Enable element
+                    $("#send-message-btn").prop('disabled', false); // Enable element
+                    $("#emoji-btn").prop('disabled', false); // Enable element
+                    $("#messages").html(""); // Clean chat messages
+
+                    // Set actual channel name, description and color
+                    actualChannelName.text(title);
+                    actualChannelDesc.text(desc);
+                    actualChannelColor.css('background-color', color);
+
+                    // Remove active-channel class from any channel and them apply to the new one
+                    $(".active-channel").removeClass("active-channel");
+                    elemento.addClass("active-channel");
+
+                    // Handle mobile screens and side bar
+                    toggleSideBar();
+
+                    connect(canalAtual, username, csrfHeaderName, csrfToken);
+                    $('#send-message-text').focus();
+                    $('#top-bar').css('display', 'block');
+                    let scrollTime = 500;
+                    $("#send-message-btn").off('click').click(function () {
+                        if ($('#send-message-text').val().trim().length === 0) {
+                            return
+                        }
+                        sendMessage(canalAtual, username);
+                        $("#messages").stop().animate({scrollTop:$("#messages").prop("scrollHeight")}, scrollTime, 'swing');
+                    });
+                    $("#send-message-text").off('keypress').keypress(function (e) {
+                        let code = (e.keyCode ? e.keyCode : e.which);
+                        if (code === 13) {
+                            if ($('#send-message-text').val().trim().length === 0) {
+                                return
+                            }
+                            e.stopImmediatePropagation();
+                            e.preventDefault();
+                            $("#send-message-text").blur();
+                            sendMessage(canalAtual, username);
+                            $("#messages").stop().animate({scrollTop:$("#messages").prop("scrollHeight")}, scrollTime, 'swing');
+                            return true;
+                        }
+                    });
+                });
+            });
+        }
+        configurarCanais();
+        defineUserColor(username);
+        $('#addChatBtn').click(() => {
+            configurarCanais();
+        });
+    });
+</script>
+</body>
+</html>

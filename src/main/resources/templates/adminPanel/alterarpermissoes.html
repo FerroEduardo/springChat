@@ -1,0 +1,46 @@
+<div class="alert alert-danger" role="alert" th:if="${param.error}" xmlns:th="http://www.w3.org/1999/xhtml">
+    Algo de errado não está certo. Tente novamente mais tarde.
+</div>
+<div class="alert alert-success" role="alert" th:if="${param.success}">
+    Permissão alterada com sucesso.
+</div>
+<form id="formChangeRoles" th:action="@{/admin/panel/alterarpermissoes}" method="post">
+    <h1 class="h3 mb-3 font-weight-normal">Alterar Permissão</h1>
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="inputUsername">Usuario</label>
+        </div>
+        <input type="text" class="form-control" name="username" id="inputUsername" maxlength="20" required aria-invalid="false">
+        <div class="input-group-append">
+            <button class="btn btn-info" id="btn-check" type="button" >✔</button>
+        </div>
+    </div>
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="inputRoles">Permissão</label>
+        </div>
+        <select class="custom-select" id="inputRoles" name="roleOption" required aria-invalid="false" disabled>
+            <option selected value="ROLE_USER">Usuário</option>
+            <option value="ROLE_USER,ROLE_ADMIN">Administrador</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block" id="btn-submit" disabled>Enviar</button>
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+</form>
+<script>
+    let btnSubmit = $("#btn-submit");
+    let btnCheck = $("#btn-check");
+    let perms = $("#inputRoles");
+    btnCheck.click(function () {
+        const username = $("#inputUsername").val();
+        checkIfUserExists(username, btnSubmit, btnCheck, perms);
+    });
+
+    $("#inputUsername").on('input', async function () {
+        if (!btnCheck.hasClass("btn-info")) {
+            btnSubmit.prop("disabled", true);
+            perms.prop("disabled", true);
+            btnCheck.removeClass("btn-success").removeClass("btn-danger").addClass("btn-info");
+        }
+    });
+</script>

@@ -1,0 +1,120 @@
+body, html {
+    font-family: "Roboto", sans-serif;
+}
+
+body {
+    /*padding: 6px;*/
+}
+
+#conversation {
+    table-layout: fixed;
+}
+
+#bottom {
+    padding-top: 5px;
+}
+
+.autor {
+    width: 20%;
+    word-wrap: break-word;
+}
+
+.hora {
+    width: 9%;
+}
+
+.mensagem {
+    width: 71%;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+@media only screen and (max-width: 992px) {
+    .autor {
+        width: 20%;
+        word-wrap: break-word;
+    }
+    .hora {
+        width: 10%;
+    }
+    .mensagem {
+        width: 70%;
+        word-wrap: break-word;
+    }
+}
+
+
+@media only screen and (max-width: 768px) {
+    .autor {
+        width: 20%;
+        word-wrap: break-word;
+    }
+    .hora {
+        width: 15%;
+    }
+    .mensagem {
+        width: 65%;
+        word-wrap: break-word;
+    }
+}
+
+thead {
+    text-align: left;
+}
+
+button {
+    margin: 0 2px;
+}
+
+form {
+    margin: 4px 0;
+}
+
+.users {
+    height: 100%;
+}
+
+#channelInput {
+    margin: 0 5px 0 0;
+}
+
+#changeChannel {
+    margin: 5px 0;
+}
+
+#disconnect {
+    margin: 0 5px;
+}
+
+.form-control {
+    margin: 0 0 5px 0;
+}
+
+.form-group {
+    padding: 0 0 5px 0;
+    margin: 0;
+}
+
+label {
+    margin-bottom: 0;
+}
+
+div.form-group:nth-child(3) > label:nth-child(1) {
+    margin: 0 5px 0 0;
+}
+
+.na-direita {
+    width: 50%; float: right;
+}
+
+.na-direita45 {
+    width: 45%; float: right;
+}
+
+.na-direita5 {
+    width: 5%; float: right;
+}
+
+.na-esquerda {
+    width: 50%; float: left;
+}

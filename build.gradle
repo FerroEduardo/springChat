@@ -1,0 +1,42 @@
+plugins {
+    id 'org.springframework.boot' version '2.3.3.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'java'
+    id 'com.adarshr.test-logger' version '2.1.0'
+}
+
+group = 'com.ferroeduardo'
+version = '1.0.0-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.postgresql:postgresql'
+    implementation 'org.webjars:webjars-locator-core'
+    implementation 'org.webjars:sockjs-client:1.1.2'
+    implementation 'org.webjars:stomp-websocket:2.3.3-1'
+    compile group: 'org.springframework.security', name: 'spring-security-messaging', version: '5.3.3.RELEASE'
+    compile group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-springsecurity5', version: '3.0.4.RELEASE'
+    // Tests
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'junit', module: 'junit'
+    }
+    implementation 'org.springframework.security:spring-security-test'
+    testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.14.3'
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.6.2'
+
+}
+
+test {
+    useJUnitPlatform()
+//    systemProperty 'spring.profiles.active', 'dev'
+    systemProperties = System.properties // -Dspring.profiles.active=dev
+}

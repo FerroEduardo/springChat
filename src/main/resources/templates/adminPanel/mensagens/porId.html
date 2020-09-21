@@ -1,0 +1,70 @@
+<table class="table table-hover table-bordered" id="tabela-mensagens">
+    <thead class="thead-dark">
+    <tr>
+        <th>ID</th>
+        <th>Autor</th>
+        <th>Canal</th>
+        <th>Data de Envio</th>
+        <th>Mensagem</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<div class="input-group">
+    <input id="message-id" type="number" placeholder="ID da Mensagem" class="form-control">
+    <div class="input-group-append">
+        <button id="btn-message" class="btn btn-outline-primary" type="button">Buscar Mensagem</button>
+    </div>
+</div>
+<script>
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    let id = parseInt(urlParams.get('id')) || null ;
+    if (id) {
+        $("#message-id").val(id);
+    }
+    $("#btn-message").click(function (event) {
+        let val = parseInt($("#message-id").val())
+        if (val) {
+            window.location.href = window.location.pathname + '?id=' + val;
+        } else {
+            event.stopPropagation();
+        }
+    });
+    $("#message-id").keyup(function (event) {
+        if (event.key === "Enter") {
+            let val = parseInt($("#message-id").val())
+            if (val) {
+                window.location.href = window.location.pathname + '?id=' + val;
+            } else {
+                event.stopPropagation();
+            }
+        }
+    });
+</script>
+<script>
+    const tabelaBody = document.getElementById("tabela-mensagens").getElementsByTagName('tbody')[0];
+    if (id) {
+        fetch(`/admin/findmessagebyid?id=${id}`).then(function (response) {
+            let contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                return response.json().then(function (json) {
+                    // console.log(json)
+                    let mensagem = json;
+                    let tableRow =
+                        `<tr>\n` +
+                        `    <td>${mensagem.id}</td>\n` +
+                        `    <td>${mensagem.author.toString().replace(/</g, "&lt;").replace(/>/g, "&gt;")}</td>\n` +
+                        `    <td>${mensagem.channel.toString().replace(/</g, "&lt;").replace(/>/g, "&gt;")}</td>\n` +
+                        `    <td>${new Date(mensagem.date).toLocaleDateString()}</td>\n` +
+                        `    <td>${mensagem.message.toString().replace(/</g, "&lt;").replace(/>/g, "&gt;")}</td>\n` +
+                        `</tr>\n`;
+                    $(tabelaBody).append(tableRow);
+                });
+            } else {
+                console.log("Oops, we haven't got JSON!");
+            }
+        });
+    }
+</script>

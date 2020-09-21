@@ -1,0 +1,116 @@
+<table class="table table-hover table-bordered" id="tabela-mensagens">
+    <thead class="thead-dark">
+    <tr>
+        <th>ID</th>
+        <th>Autor</th>
+        <th>Canal</th>
+        <th>Data de Envio</th>
+        <th>Mensagem</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<div class="input-group">
+    <input id="message-author" type="text" placeholder="Autor da Mensagem" class="form-control">
+    <div class="input-group-append">
+        <button id="btn-message" class="btn btn-outline-primary" type="button">Buscar Mensagem</button>
+    </div>
+</div>
+<div>
+    <div class="input-group">
+        <input id="page-number" type="number" placeholder="Número da Página" class="form-control">
+        <div class="input-group-append">
+            <button id="btn-first-page" class="btn btn-outline-primary" type="button">Primeira Página</button>
+            <button id="btn-previous-page" class="btn btn-primary" type="button">Página Anterior</button>
+            <button id="btn-next-page" class="btn btn-primary" type="button">Próxima Página</button>
+            <button id="btn-last-page" class="btn btn-outline-primary" type="button" hidden>Última Página</button>
+        </div>
+    </div>
+    <script>
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        let page = parseInt(urlParams.get('page')) || 0 ;
+        let author = urlParams.get('author') || null ;
+        if (author) {
+            $("#message-author").val(author);
+        }
+        $("#btn-message").click(function (event) {
+            let val = $("#message-author").val()
+            if (val) {
+                window.location.href = window.location.pathname + '?page=' + page + '&author=' + val;
+            } else {
+                event.stopPropagation();
+            }
+        });
+        $("#message-author").keyup(function (event) {
+            if (event.key === "Enter") {
+                let val = $("#message-author").val()
+                if (val) {
+                    window.location.href = window.location.pathname + '?page=' + page + '&author=' + val;
+                } else {
+                    event.stopPropagation();
+                }
+            }
+        });
+        $("#btn-next-page").click(function () {
+            window.location.href = window.location.pathname + '?page=' + (page + 1) + '&author=' + author;
+        });
+        $("#btn-previous-page").click(function () {
+            window.location.href = window.location.pathname + '?page=' + ((page - 1) >= 0 ? (page - 1) : 0) + '&author=' + author;
+        });
+        $("#btn-first-page").click(function () {
+            window.location.href = window.location.pathname + '?page=0' + '&author=' + author;
+        });
+        $("#page-number").keyup(function (event) {
+            if (event.key === "Enter") {
+                let val = parseInt($("#page-number").val())
+                let author = $("#message-author").val()
+                if (val) {
+                    window.location.href = window.location.pathname + '?page=' + val + '&author=' + author;
+                } else {
+                    window.location.href = window.location.pathname + '?page=0' + '&author=' + author;
+                }
+            }
+        });
+    </script>
+</div>
+<script>
+    const tabelaBody = document.getElementById("tabela-mensagens").getElementsByTagName('tbody')[0];
+    let count;
+    if (author) {
+        fetch(`/admin/findmessagebyauthor?page=${page}&author=${author}`).then(function (response) {
+            let contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                return response.json().then(function (json) {
+                    // console.log(json)
+                    count = json.length;
+                    json.map(mensagem => {
+                        let tableRow =
+                            `<tr>\n` +
+                            `    <td>${mensagem.id}</td>\n` +
+                            `    <td>${mensagem.author.toString().replace(/</g, "&lt;").replace(/>/g, "&gt;")}</td>\n` +
+                            `    <td>${mensagem.channel.toString().replace(/</g, "&lt;").replace(/>/g, "&gt;")}</td>\n` +
+                            `    <td>${new Date(mensagem.date).toLocaleDateString()}</td>\n` +
+                            `    <td>${mensagem.message.toString().replace(/</g, "&lt;").replace(/>/g, "&gt;")}</td>\n` +
+                            `</tr>\n`;
+                        $(tabelaBody).append(tableRow);
+                    });
+                }).finally(function (){
+                    fetch('/admin/pageableSize').then(function (response) {
+                        let contentType = response.headers.get("content-type");
+                        if(contentType && contentType.indexOf("application/json") !== -1) {
+                            return response.json().then(function (json) {
+                                if ((document.getElementById("tabela-mensagens").getElementsByTagName('tr').length - 1) < json.pageableSize) {
+                                    $("#btn-next-page").prop("disabled", true)
+                                }
+                            });
+                        }
+                    });
+                });
+            } else {
+                console.log("Oops, we haven't got JSON!");
+            }
+        });
+    }
+</script>

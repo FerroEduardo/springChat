@@ -1,0 +1,46 @@
+<div class="alert alert-danger" role="alert" th:if="${param.error}">
+    Algo de errado não está certo. Tente novamente mais tarde.
+</div>
+<div class="alert alert-success" role="alert" th:if="${param.success}">
+    Estado da conta alterada com sucesso.
+</div>
+<form id="formChangeActive" th:action="@{/admin/panel/alterarativado}" method="post">
+    <h1 class="h3 mb-3 font-weight-normal">Alterar Estado da Conta</h1>
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="inputUsername">Usuario</label>
+        </div>
+        <input type="text" class="form-control" name="username" id="inputUsername" maxlength="20" required aria-invalid="false">
+        <div class="input-group-append">
+            <button class="btn btn-info" id="btn-check" type="button" onclick="checkIfUserExists()">✔</button>
+        </div>
+    </div>
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="inputActive">Estado da Conta</label>
+        </div>
+        <select class="custom-select" id="inputActive" name="activeOption" required aria-invalid="false" disabled>
+            <option selected value="true">Ativado</option>
+            <option value="false">Desativado</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block" id="btn-submit" disabled>Enviar</button>
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+</form>
+<script>
+    let btnSubmit = $("#btn-submit");
+    let btnCheck = $("#btn-check");
+    let accountActive = $("#inputActive");
+    btnCheck.click(function () {
+        const username = $("#inputUsername").val();
+        checkIfUserExists(username, btnSubmit, btnCheck, accountActive);
+    });
+
+    $("#inputUsername").on('input', async function () {
+        if (!btnCheck.hasClass("btn-info")) {
+            btnSubmit.prop("disabled", true);
+            accountActive.prop("disabled", true);
+            btnCheck.removeClass("btn-success").removeClass("btn-danger").addClass("btn-info");
+        }
+    });
+</script>

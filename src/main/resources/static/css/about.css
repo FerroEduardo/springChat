@@ -1,0 +1,15 @@
+body, html {
+    font-family: "Roboto", sans-serif;
+}
+
+.main-content {
+    min-height: 70%;  /* Fallback for browsers do NOT support vh unit */
+    min-height: 70vh; /* These two lines are counted as one :-)       */
+
+    display: flex;
+    align-items: center;
+
+    margin: 5% 2%;
+    border-radius: 5px;
+    padding: 0;
+}
