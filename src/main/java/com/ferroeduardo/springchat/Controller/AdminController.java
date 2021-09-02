@@ -2,10 +2,10 @@ package com.ferroeduardo.springchat.Controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ferroeduardo.springchat.Chat.ChatMessageSafeData;
+import com.ferroeduardo.springchat.Chat.ChatMessageDTO;
 import com.ferroeduardo.springchat.Usuario.UserRole;
 import com.ferroeduardo.springchat.Usuario.Usuario;
-import com.ferroeduardo.springchat.Usuario.UsuarioSafeData;
+import com.ferroeduardo.springchat.Usuario.UsuarioDTO;
 import com.ferroeduardo.springchat.Repository.ChatMessageRepository;
 import com.ferroeduardo.springchat.Repository.UsuarioRepository;
 import org.slf4j.Logger;
@@ -114,33 +114,33 @@ public class AdminController {
 
     @GetMapping(value="/findallusers", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public List<UsuarioSafeData> findAllUsers(@RequestParam(required = false, defaultValue = "0", name = "page") Integer page) {
+    public List<UsuarioDTO> findAllUsers(@RequestParam(required = false, defaultValue = "0", name = "page") Integer page) {
         return usuarioRepository.findAllSafeDataPageable(PageRequest.of(page, PAGEABLE_SIZE));
     }
 
     @GetMapping(value="/findallmessages", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public List<ChatMessageSafeData> findAllMessages(@RequestParam(required = false, defaultValue = "0", name = "page") Integer page) {
+    public List<ChatMessageDTO> findAllMessages(@RequestParam(required = false, defaultValue = "0", name = "page") Integer page) {
         return messageRepository.findAllSafeDataPageable(PageRequest.of(page, PAGEABLE_SIZE));
     }
 
     @GetMapping(value="/findmessagebyid", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ChatMessageSafeData findMessageById(@RequestParam(required = true, name = "id") Long id) {
+    public ChatMessageDTO findMessageById(@RequestParam(required = true, name = "id") Long id) {
         return messageRepository.findByIdSafe(id).orElseThrow();
     }
 
     @GetMapping(value="/findmessagebyauthor", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public List<ChatMessageSafeData> findMessageByAuthor(@RequestParam(required = true, name = "author") String author,
-                                                         @RequestParam(required = false, defaultValue = "0", name = "page") Integer page) {
+    public List<ChatMessageDTO> findMessageByAuthor(@RequestParam(required = true, name = "author") String author,
+                                                    @RequestParam(required = false, defaultValue = "0", name = "page") Integer page) {
         return messageRepository.findByAuthorPageable(author, PageRequest.of(page, PAGEABLE_SIZE));
     }
 
     @GetMapping(value="/findmessagebycontent", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public List<ChatMessageSafeData> findMessageByAuthorAndMessageLike(@RequestParam(required = true, name = "content") String content,
-                                                         @RequestParam(required = false, defaultValue = "0", name = "page") Integer page) {
+    public List<ChatMessageDTO> findMessageByAuthorAndMessageLike(@RequestParam(required = true, name = "content") String content,
+                                                                  @RequestParam(required = false, defaultValue = "0", name = "page") Integer page) {
         return messageRepository.findByMessageContains(content, PageRequest.of(page, PAGEABLE_SIZE));
     }
 

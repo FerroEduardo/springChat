@@ -2,7 +2,7 @@ package com.ferroeduardo.springchat.Chat;
 
 import java.util.Date;
 
-public interface ChatMessageSafeData {
+public interface ChatMessageDTO {
 
     long getId();
 

@@ -2,7 +2,7 @@ package com.ferroeduardo.springchat.Usuario;
 
 import java.util.Date;
 
-public interface UsuarioSafeData {
+public interface UsuarioDTO {
     Long getId();
 
     String getUsuario();

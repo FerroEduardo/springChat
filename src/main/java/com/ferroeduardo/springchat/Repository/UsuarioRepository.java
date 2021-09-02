@@ -1,7 +1,7 @@
 package com.ferroeduardo.springchat.Repository;
 
 import com.ferroeduardo.springchat.Usuario.Usuario;
-import com.ferroeduardo.springchat.Usuario.UsuarioSafeData;
+import com.ferroeduardo.springchat.Usuario.UsuarioDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
-    List<UsuarioSafeData> findFirst20ByOrderById();
+    List<UsuarioDTO> findFirst20ByOrderById();
 
     Optional<Usuario> findByUsuario(String usuario);
 
@@ -33,8 +33,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     int changeUserPassword(String senha, String usuario);
 
     @Query(value="SELECT u.id as id, u.usuario as usuario, u.ativada as ativada, u.data as data, u.roles as roles FROM Usuario u")
-    List<UsuarioSafeData> findAllSafeData();
+    List<UsuarioDTO> findAllSafeData();
 
     @Query(value="SELECT u.id as id, u.usuario as usuario, u.ativada as ativada, u.data as data, u.roles as roles FROM Usuario u ORDER BY u.id")
-    List<UsuarioSafeData> findAllSafeDataPageable(Pageable pageable);
+    List<UsuarioDTO> findAllSafeDataPageable(Pageable pageable);
 }
